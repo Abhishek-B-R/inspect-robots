@@ -42,7 +42,9 @@ A scorer with no verdict for a trial can abstain by returning
 from a `0.0` verdict and from an errored trial (an empty epoch entry).
 Reducers leave abstained epochs out, a scene where every epoch abstained
 reduces to `null`, and a metric averages only the scenes that have a value
-(`null` when none do). Reports show an abstention as `n/a`.
+(`null` when none do). Reports show an abstention as `n/a`, and
+`EvalResults.abstentions` counts abstained trials per scorer so each metric's
+denominator stays visible: `inspect` and `view` print it beside the metric.
 
 ## Epochs and reducers
 

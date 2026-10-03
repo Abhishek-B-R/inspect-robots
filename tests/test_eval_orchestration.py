@@ -538,6 +538,7 @@ def test_abstaining_scorer_records_no_verdict_rather_than_an_error(tmp_path: Pat
     assert scene.epochs == ({"abstains": None}, {"abstains": None})
     assert scene.reduced == {"abstains": None}
     assert log.results.metrics == {"abstains": None}
+    assert log.results.abstentions == {"abstains": 2}
 
     # The abstention survives the JSON round trip as null, distinct from 0.0
     # and from an errored trial's empty epoch entry.
@@ -545,6 +546,7 @@ def test_abstaining_scorer_records_no_verdict_rather_than_an_error(tmp_path: Pat
     read_back = read_eval_log(str(written))
     assert read_back.samples[0].epochs == ({"abstains": None}, {"abstains": None})
     assert read_back.results.metrics == {"abstains": None}
+    assert read_back.results.abstentions == {"abstains": 2}
 
 
 def test_abstained_epochs_and_scenes_are_left_out_of_the_metric(tmp_path: Path) -> None:
@@ -568,6 +570,8 @@ def test_abstained_epochs_and_scenes_are_left_out_of_the_metric(tmp_path: Path) 
     assert s0.reduced == {"abstains": 1.0}  # not 0.5: the abstention is not a failure
     assert s1.reduced == {"abstains": None}
     assert log.results.metrics == {"abstains": 1.0}
+    # s0 epoch 1 plus both s1 epochs: the denominator behind the 1.0.
+    assert log.results.abstentions == {"abstains": 3}
 
 
 def test_one_failing_scorer_keeps_the_others(tmp_path: Path) -> None:

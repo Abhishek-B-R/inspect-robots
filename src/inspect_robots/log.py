@@ -154,6 +154,10 @@ class EvalResults:
     # as empty entries in ``SceneResult.epochs``). The default keeps logs
     # written before this field existed readable.
     errored_trials: int = 0
+    # Per scorer, how many trials it abstained on (``Score(value=None)``).
+    # Metrics average only judged trials, so this is the other half of the
+    # denominator. Scorers that never abstained are omitted.
+    abstentions: dict[str, int] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

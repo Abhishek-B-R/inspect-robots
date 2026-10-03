@@ -524,6 +524,7 @@ def _run_eval(
     error: str | None = None
     error_count = 0
     errored_trials = 0
+    abstentions: dict[str, int] = {}
 
     halted = False
     stopped = False
@@ -683,6 +684,8 @@ def _run_eval(
                             continue
                         per_scorer_scores[scorer.name].append(score)
                         epoch_values[scorer.name] = value
+                        if value is None:
+                            abstentions[scorer.name] = abstentions.get(scorer.name, 0) + 1
                     epoch_dicts.append(epoch_values)
                     # Captured at the same instant as the judgement, on purpose:
                     # these fields are documented as strictly parallel, so a later
@@ -821,6 +824,7 @@ def _run_eval(
             total_trials=total_trials,
             metrics=metrics,
             errored_trials=errored_trials,
+            abstentions=abstentions,
         ),
         stats=stats,
         samples=tuple(scene_results),

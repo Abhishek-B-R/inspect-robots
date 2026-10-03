@@ -8207,3 +8207,29 @@ def test_config_show_displays_the_grader_default(
     out = capsys.readouterr().out
     assert "grader" in out
     assert "vlm" in out
+
+
+def test_inspect_and_view_show_abstention_counts_beside_metrics(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """A metric averaged over judged trials only must show how many abstained."""
+    log = _step_limit_log(reasons=("success",))
+    log = dataclasses.replace(
+        log,
+        results=dataclasses.replace(
+            log.results,
+            metrics={"judged": 0.5, "other": 1.0},
+            abstentions={"judged": 3},
+        ),
+    )
+    path = _write_log(log, tmp_path, "abstained.json")
+
+    assert main(["inspect", str(path)]) == 0
+    out = capsys.readouterr().out
+    assert "judged: 0.5 (3 abstained)" in out
+    assert "other: 1\n" in out
+
+    assert main(["view", str(path)]) == 0
+    document = path.with_suffix(".html").read_text(encoding="utf-8")
+    assert '<div class="stat-name">judged (3 abstained)</div>' in document
+    assert '<div class="stat-name">other</div>' in document
